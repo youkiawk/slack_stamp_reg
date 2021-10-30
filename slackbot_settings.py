@@ -1,5 +1,5 @@
 # botアカウントのトークンを指定
-API_TOKEN = "xoxb-2652196689649-2691276610720-dmrt3C32GJ6VSicCMzgt98eI"
+API_TOKEN = ""
 
 # このbot宛のメッセージで、どの応答にも当てはまらない場合の応答文字列
 DEFAULT_REPLY = "すみません、分かりません。"
