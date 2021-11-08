@@ -50,20 +50,41 @@ def getImageUrl(res):
 def respond_func(message):
     message.send("LINE STOREで、好きなスタンプのページのURLをコピーして僕に送信すると、全てのスタンプの画像のURLを返信します。 \
         \nLINE STOREはコチラ https://store.line.me/stickershop/\
-        \nスタンプの登録はまだできないよ！")  
+        \nスタンプの登録はまだできないよ！\
+        \n＜NEW!＞ [数字][半角スペース][URL]と入力すると、先頭から[数字]番目のスタンプのURLだけ取得できます。")  
 
 @default_reply()
 def default_func(message):
     text = message.body['text']
     text = text.replace("<","").replace(">","")
-    if "https://store.line.me" not in text:
+    texts = text.split(" ")
+    text_url = ""
+    text_stampidx = -1
+    print(texts)
+    if len(texts) > 2:
+        message.send("おっと、何か間違えてるようです。使い方は、「使い方」と送信してください。")
+        return
+    elif len(texts) == 2:
+        valid_num = [str(i) for i in range(1,41)]
+        if texts[0] not in valid_num:
+            message.send("スタンプの番号は、半角数字で1から40のうちから一つ入力してください。使い方は、「使い方」と送信してください。")
+            return
+        text_stampidx = int(texts[0])
+        text_url = texts[1]
+    elif len(texts) == 1:
+        text_url = texts[0]
+
+    if "https://store.line.me" not in text_url:
         message.send("スタンプのページのURLを指定してください。使い方は、「使い方」と送信してください。")
         return
-    res = requests.get(text)
+
+    res = requests.get(text_url)
     if res.status_code == 200:
         url_list = getImageUrl(res)
         url_onetext = ""
-        for imgurl in url_list:
+        for i, imgurl in enumerate(url_list):
+            if text_stampidx != -1 and text_stampidx != i + 1:
+                continue
             url_onetext = url_onetext + "\n" + imgurl
         message.send(url_onetext)
     else:
